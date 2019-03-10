@@ -88,4 +88,31 @@ private:
 
     static int ref_count_;
 };
+
+
+class window_context_guard
+{
+public:
+    window_context_guard() = default;
+
+    window_context_guard(GLFWwindow*) = delete;
+
+    window_context_guard(GLFWwindow*&& win) : window_(win)
+    {
+    }
+
+
+    ~window_context_guard()
+    {
+    }
+
+    operator GLFWwindow*()
+    {
+        return window_;
+    }
+
+private:
+    glfw_init_guard glfw_lib_;
+    GLFWwindow* window_;
+};
 } // namespace bp
