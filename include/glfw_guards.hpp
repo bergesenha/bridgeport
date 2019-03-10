@@ -6,11 +6,13 @@
 
 
 class GLFWwindow;
+class GLFWmonitor;
 
 int glfwInit(void);
 void glfwTerminate(void);
-
 void glfwDestroyWindow(GLFWwindow*);
+GLFWwindow* glfwCreateWindow(int, int, const char*, GLFWmonitor*, GLFWwindow*);
+
 
 namespace bp
 {
@@ -98,22 +100,30 @@ class window_context_guard
 public:
     window_context_guard() = default;
 
-    window_context_guard(GLFWwindow*&) = delete;
-
-    window_context_guard(GLFWwindow*&& win) : window_(win)
+    window_context_guard(int width,
+                         int height,
+                         std::string title,
+                         GLFWmonitor* monitor = nullptr,
+                         GLFWwindow* share = nullptr)
+        : glfw_lib_(),
+          window_(
+              glfwCreateWindow(width, height, title.c_str(), monitor, share)),
+          name_(title)
     {
     }
 
     window_context_guard(const window_context_guard&) = delete;
 
     window_context_guard(window_context_guard&& other)
-        : glfw_lib_(std::move(other.glfw_lib_)), window_(other.window_)
+        : glfw_lib_(std::move(other.glfw_lib_)),
+          window_(other.window_),
+          name_(std::move(other.name_))
     {
     }
 
-    window_context_guard& operator=(GLFWwindow*&) = delete;
 
     window_context_guard& operator=(const window_context_guard&) = delete;
+
 
     window_context_guard&
     operator=(window_context_guard&& other)
@@ -125,15 +135,6 @@ public:
         return *this;
     }
 
-    window_context_guard&
-    operator=(GLFWwindow*&& win)
-    {
-        window_context_guard temp(std::move(win));
-
-        *this = std::move(temp);
-
-        return *this;
-    }
 
     ~window_context_guard()
     {
@@ -158,5 +159,6 @@ public:
 private:
     glfw_init_guard glfw_lib_;
     GLFWwindow* window_;
+    std::string name_;
 };
 } // namespace bp
