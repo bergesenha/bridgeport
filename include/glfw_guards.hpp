@@ -95,7 +95,7 @@ class window_context_guard
 public:
     window_context_guard() = default;
 
-    window_context_guard(GLFWwindow*) = delete;
+    window_context_guard(GLFWwindow*&) = delete;
 
     window_context_guard(GLFWwindow*&& win) : window_(win)
     {
