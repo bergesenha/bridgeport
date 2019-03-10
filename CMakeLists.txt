@@ -10,7 +10,10 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(BRIDGEPORT_BUILD_TESTS "Build bridgeport unit tests." OFF)
 
 
-add_library(bridgeport INTERFACE)
+add_library(bridgeport)
 target_include_directories(bridgeport
-    INTERFACE ${PROJECT_SOURCE_DIR}/include
+    PUBLIC ${PROJECT_SOURCE_DIR}/include
+    )
+target_sources(bridgeport
+    PUBLIC ${PROJECT_SOURCE_DIR}/src/glfw_guards.cpp
     )
