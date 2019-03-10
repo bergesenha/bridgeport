@@ -17,3 +17,6 @@ target_include_directories(bridgeport
 target_sources(bridgeport
     PUBLIC ${PROJECT_SOURCE_DIR}/src/glfw_guards.cpp
     )
+target_compile_features(bridgeport
+    PUBLIC cxx_std_17
+    )
