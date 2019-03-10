@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "error.hpp"
 
 
@@ -8,6 +10,7 @@ class GLFWwindow;
 int glfwInit(void);
 void glfwTerminate(void);
 
+void glfwDestroyWindow(GLFWwindow*);
 
 namespace bp
 {
@@ -101,14 +104,55 @@ public:
     {
     }
 
+    window_context_guard(const window_context_guard&) = delete;
+
+    window_context_guard(window_context_guard&& other)
+        : glfw_lib_(std::move(other.glfw_lib_)), window_(other.window_)
+    {
+    }
+
+    window_context_guard& operator=(GLFWwindow*&) = delete;
+
+    window_context_guard& operator=(const window_context_guard&) = delete;
+
+    window_context_guard&
+    operator=(window_context_guard&& other)
+    {
+        auto temp = std::move(other);
+
+        swap(temp);
+
+        return *this;
+    }
+
+    window_context_guard&
+    operator=(GLFWwindow*&& win)
+    {
+        window_context_guard temp(std::move(win));
+
+        *this = std::move(temp);
+
+        return *this;
+    }
 
     ~window_context_guard()
     {
+        if(window_)
+        {
+            glfwDestroyWindow(window_);
+        }
     }
 
     operator GLFWwindow*()
     {
         return window_;
+    }
+
+    void
+    swap(window_context_guard& other)
+    {
+        std::swap(glfw_lib_, other.glfw_lib_);
+        std::swap(window_, other.window_);
     }
 
 private:
